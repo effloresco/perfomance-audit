@@ -1,30 +1,45 @@
 import { useLayoutEffect } from 'react';
 
-function isInViewport(rect) {
-  return rect.bottom > 0 && rect.top < window.innerHeight;
-}
-
 export function useBioClamp(containerRef, deps) {
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return undefined;
 
+    let frameId = null;
+
     const update = () => {
       container.querySelectorAll('.tutor-card__bio').forEach((bio) => {
-        if (!isInViewport(bio.getBoundingClientRect())) return;
+        const card = bio.closest('.tutor-card');
+
         bio.classList.remove('is-clamped');
         const fullHeight = bio.offsetHeight;
+
         bio.classList.add('is-clamped');
-        bio.closest('.tutor-card').classList.toggle('has-more', fullHeight > bio.offsetHeight + 1);
+        const clampedHeight = bio.offsetHeight;
+
+        card.classList.toggle('has-more', fullHeight > clampedHeight + 1);
+      });
+    };
+
+    const scheduleUpdate = () => {
+      if (frameId !== null) return;
+
+      frameId = requestAnimationFrame(() => {
+        frameId = null;
+        update();
       });
     };
 
     update();
-    window.addEventListener('scroll', update);
-    window.addEventListener('resize', update);
+    window.addEventListener('resize', scheduleUpdate);
+
     return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      window.removeEventListener('resize', scheduleUpdate);
+
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
     };
+
   }, deps);
 }

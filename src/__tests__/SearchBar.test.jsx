@@ -8,8 +8,7 @@ describe('Header', () => {
 
     const heroImage = screen.getByRole('img');
 
-    expect(heroImage).toHaveAttribute('width', '2400');
-    expect(heroImage).toHaveAttribute('height', '900');
-
+    expect(heroImage.getAttribute('width')).toBe('2400');
+    expect(heroImage.getAttribute('height')).toBe('900');
   });
 });

@@ -8,16 +8,37 @@ export function useBioClamp(containerRef, deps) {
     let frameId = null;
 
     const update = () => {
-      container.querySelectorAll('.tutor-card__bio').forEach((bio) => {
-        const card = bio.closest('.tutor-card');
+      const bios = Array.from(
+        container.querySelectorAll('.tutor-card__bio')
+      );
 
+      if (!bios.length) return;
+
+      const cards = bios.map((bio) =>
+        bio.closest('.tutor-card')
+      );
+
+      bios.forEach((bio) => {
         bio.classList.remove('is-clamped');
-        const fullHeight = bio.offsetHeight;
+      });
 
+      const fullHeights = bios.map((bio) => bio.offsetHeight);
+
+      bios.forEach((bio) => {
         bio.classList.add('is-clamped');
-        const clampedHeight = bio.offsetHeight;
+      });
 
-        card.classList.toggle('has-more', fullHeight > clampedHeight + 1);
+      const clampedHeights = bios.map((bio) => bio.offsetHeight);
+
+      bios.forEach((bio, index) => {
+        const card = cards[index];
+
+        if (!card) return;
+
+        card.classList.toggle(
+          'has-more',
+          fullHeights[index] > clampedHeights[index] + 1
+        );
       });
     };
 
@@ -31,6 +52,7 @@ export function useBioClamp(containerRef, deps) {
     };
 
     update();
+
     window.addEventListener('resize', scheduleUpdate);
 
     return () => {
@@ -40,6 +62,5 @@ export function useBioClamp(containerRef, deps) {
         cancelAnimationFrame(frameId);
       }
     };
-
   }, deps);
 }

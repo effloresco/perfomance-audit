@@ -1,5 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import TutorCard from './TutorCard';
+import { useBioClamp } from '../hooks/useBioClamp';
 
 const PAGE_SIZE = 50;
 
@@ -11,6 +12,7 @@ export default function TutorList({
   onToggleFavorite,
   style,
 }) {
+  const containerRef = useRef(null);
   const [currentNumber, setCurrentNumber] = useState(PAGE_SIZE);
 
   useEffect(() => {
@@ -22,9 +24,11 @@ export default function TutorList({
     [tutors, currentNumber]
   );
 
+  useBioClamp(containerRef, [currentTutors]);
+
   return (
     <>
-      <div className="tutor-grid" style={style}>
+      <div className="tutor-grid" ref={containerRef} style={style}>
         {currentTutors.map((tutor) => (
           <TutorCard
             key={tutor.id}
@@ -47,6 +51,5 @@ export default function TutorList({
         </button>
       )}
     </>
-
   );
 }

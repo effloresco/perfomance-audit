@@ -1,15 +1,19 @@
 import { SUBJECTS, FORMATS } from '../data/subjects';
 import { buildSubjectOptions } from '../utils/subjectOptions';
 import { formatPrice } from '../utils/format';
+import { useMemo } from 'react';
 
 export default function Filters({ filters, reference, tutors, onChange, onReset }) {
+const groups = useMemo(() => {
   const counts = tutors.reduce((acc, t) => {
     t.subjects.forEach((s) => {
       acc[s] = (acc[s] || 0) + 1;
     });
     return acc;
   }, {});
-  const groups = buildSubjectOptions(SUBJECTS, counts);
+
+  return buildSubjectOptions(SUBJECTS, counts);
+}, [tutors]);
 
   const toggleSubject = (title) => {
     const subjects = filters.subjects.includes(title)

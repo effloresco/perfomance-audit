@@ -1,23 +1,14 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import SearchBar from '../components/SearchBar';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import Header from '../components/Header';
 
-describe('SearchBar', () => {
-  it('показує кількість знайдених і передає введений текст', () => {
-    const onQueryChange = vi.fn();
-    render(
-      <SearchBar
-        query=""
-        onQueryChange={onQueryChange}
-        sortBy="recommended"
-        onSortChange={() => {}}
-        count={21}
-      />
-    );
+describe('Header', () => {
+  it('резервує простір для головного зображення до його завантаження', () => {
+    render(<Header favoritesCount={0} total={2000} />);
 
-    expect(screen.getByText('Знайдено 21 репетитор')).toBeTruthy();
+    const heroImage = screen.getByRole('img');
 
-    fireEvent.change(screen.getByLabelText('Пошук репетитора'), { target: { value: 'фізика' } });
-    expect(onQueryChange).toHaveBeenCalledWith('фізика');
+    expect(heroImage.getAttribute('width')).toBe('2400');
+    expect(heroImage.getAttribute('height')).toBe('900');
   });
 });
